@@ -3,6 +3,8 @@ import random
 import time
 
 from src.bamboo import Bamboo
+from src.ground import Ground
+from src.day_night import DayNightCycle
  
 class Game:
 
@@ -21,17 +23,23 @@ class Game:
                         Bamboo(self.screen,70),
                         Bamboo(self.screen,300),
                         Bamboo(self.screen,420)]
-
-        #Game variables
+        
+        # Initialize ground, day/night cycle
+        self.ground = Ground(self.screen)
+        self.day_night = DayNightCycle(self.screen)
+        
+        # Game variables
         self.running = False
+        self.clock = pygame.time.Clock()
+        self.last_time = time.time()
 
     #Draws the background
     def draw_background(self):
-        self.screen.fill((20,80,140))
+        self.day_night.draw()
 
     #Draws the ground
     def draw_ground(self):
-        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0, 440, 500, 60))
+        self.ground.draw()
 
     #Draws the trees
     def draw_bamboos(self):
@@ -45,7 +53,6 @@ class Game:
         self.draw_bamboos()
         pygame.display.flip()
         
-
     #Checks the events
     def check_events(self):
         for event in pygame.event.get():
@@ -57,6 +64,16 @@ class Game:
         self.running = True
 
         while self.running:
+            # Calculate delta time
+            current_time = time.time()
+            dt = current_time - self.last_time
+            self.last_time = current_time
+            
+            # Update day/night cycle
+            self.day_night.update(dt)
+            
             self.check_events()
             self.draw()
+            self.clock.tick(60)  # Cap at 60 FPS
+            
         pygame.quit()

@@ -85,7 +85,7 @@ class Bamboo:
         self.x = x
         self.width = random.randint(5,20)
         self.color = (0,160,0)
-        self.max_height = random.randint(3*self.width, 10*self.width)
+        self.max_height = random.randint(10*self.width, 20*self.width)
         self.img = pygame.image.load('assets/bamboo/bamboo_stem.png')
 
         #Tracks growth info
@@ -115,7 +115,9 @@ class Bamboo:
 
     #Calculates the max height
     def calculate_max_height(self):
-        self.max_height = 400
+        # Allow bamboo to grow up to 80% of screen height
+        screen_height = self.screen.get_height()
+        self.max_height = int(screen_height * 0.8)
         
     #Adds a segment
     def add_segment(self):
