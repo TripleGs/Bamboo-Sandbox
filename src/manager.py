@@ -4,7 +4,6 @@ import time
 
 from src.bamboo import Bamboo
 from src.ground import Ground
-from src.day_night import DayNightCycle
  
 class Game:
 
@@ -24,9 +23,8 @@ class Game:
                         Bamboo(self.screen,300),
                         Bamboo(self.screen,420)]
         
-        # Initialize ground, day/night cycle
+        # Initialize ground
         self.ground = Ground(self.screen)
-        self.day_night = DayNightCycle(self.screen)
         
         # Game variables
         self.running = False
@@ -35,7 +33,7 @@ class Game:
 
     #Draws the background
     def draw_background(self):
-        self.day_night.draw()
+        self.screen.fill((100, 180, 255))
 
     #Draws the ground
     def draw_ground(self):
@@ -43,9 +41,20 @@ class Game:
 
     #Draws the trees
     def draw_bamboos(self):
+        dead_bamboos = []
         for bamboo in self.bamboos:
-            bamboo.draw()
-        
+            # If bamboo returns False (dead), add it to the removal list
+            if not bamboo.draw():
+                dead_bamboos.append(bamboo)
+                
+        # Remove dead bamboos from the list
+        for dead_bamboo in dead_bamboos:
+            self.bamboos.remove(dead_bamboo)
+
+        for bamboo in self.bamboos:
+            if bamboo.check_if_spread(): 
+                self.bamboos.append(Bamboo(self.screen, random.randint(0, self.width)))
+
     #Draws the elements on the screen
     def draw(self):
         self.draw_background()
@@ -68,9 +77,6 @@ class Game:
             current_time = time.time()
             dt = current_time - self.last_time
             self.last_time = current_time
-            
-            # Update day/night cycle
-            self.day_night.update(dt)
             
             self.check_events()
             self.draw()
